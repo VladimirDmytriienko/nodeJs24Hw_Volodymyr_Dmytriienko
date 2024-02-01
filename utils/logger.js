@@ -1,12 +1,12 @@
 const colors = require('colors/safe');
-config = require('config')
+const config = require('config');
 
-const colorsEnabled = config.get('colors_enabled') === '1';
+const colorsEnabled = config.get('colorsEnabled');
 
 colorsEnabled ? colors.enable() : colors.disable();
 
 function logger(moduleName) {
-    const logLevel = config.get('log_level');
+    const logLevel = config.get('logLevel');
     switch (logLevel) {
         case 'info':
             return {
