@@ -7,25 +7,23 @@ colorsEnabled ? colors.enable() : colors.disable();
 
 function logger(moduleName) {
     const logLevel = config.get('logLevel');
-    switch (logLevel) {
-        case 'info':
-            return {
-                info: (...args) => console.info(colors.bgCyan(moduleName), ...args),
-                warn: (...args) => console.warn(colors.bgYellow(moduleName), ...args),
-                error: (...args) => console.error(colors.bgRed(moduleName), ...args),
-            };
-        case 'warn':
-            return {
-                info: () => { },
-                warn: (...args) => console.warn(colors.bgYellow(moduleName), ...args),
-                error: (...args) => console.error(colors.bgRed(moduleName), ...args),
-            };
-        case 'error':
-            return {
-                info: () => { },
-                warn: () => { },
-                error: (...args) => console.error(colors.bgRed(moduleName), ...args),
-            };
+
+    const levelWeight = {
+        info: 0,
+        warn: 1,
+        error: 2
+    }
+
+    return {
+        info: (...args) => {
+            if (levelWeight[logLevel] !== levelWeight.info) return; // info пише тільки на своєму лог левелі
+            console.info(colors.bgCyan(moduleName), ...args)
+        },
+        warn: (...args) => {
+            if (levelWeight[logLevel] > levelWeight.warn) return; // warn пише якщо виставлений лог левел info або warn
+            console.warn(colors.bgCyan(moduleName), ...args)
+        },
+        error: (...args) => console.error(colors.bgRed(moduleName), ...args) // error пише завджи, немає умови коли він відключений :)
     }
 }
 
