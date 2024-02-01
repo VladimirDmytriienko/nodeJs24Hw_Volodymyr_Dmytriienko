@@ -1,0 +1,21 @@
+{
+  "name": "nodejs24hw_volodymyr_dmytriienko",
+  "version": "1.0.0",
+  "description": "The description",
+  "main": "main.js",
+  "scripts": {
+    "start": "node ./main.js",
+    "start:dev": "nodemon ./main.js",
+    "debug": "node --inspect-brk ./main.js"
+  },
+  "author": "volodymyr_dmytriienko",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "config": "^3.3.10",
+    "dotenv": "^16.4.1"
+  }
+}
