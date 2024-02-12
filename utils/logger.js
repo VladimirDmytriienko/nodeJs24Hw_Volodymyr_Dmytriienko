@@ -1,4 +1,5 @@
 const fileSync = require('fs');
+const path = require('path');
 const colors = require('colors/safe');
 const config = require('config');
 
@@ -12,12 +13,16 @@ if (!isLogPath) {
     fs.mkdir(logPath);
 }
 
-const info = fileSync.createWriteStream('logs/info.log')
-const error = fileSync.createWriteStream('logs/errors.log')
+const infoLogPath = path.join(logPath, 'info.log');
+const errorLogPath = path.join(logPath, 'errors.log');
+
+const info = fileSync.createWriteStream(infoLogPath, { flags: 'a'})
+const error = fileSync.createWriteStream(errorLogPath, { flags: 'a' })
 
 function writeToStream(name, moduleName, args) {
-    name === 'info' ? info.write(`[${new Date().toISOString()}]  ${moduleName} ${args.join(' ')}.\n`)
-        : error.write(`[${new Date().toISOString()}]  ${moduleName}: ${args.join(' ')}.\n`)
+    const message = `[${new Date().toISOString()}] ${moduleName} ${JSON.stringify(args)}.\n`;
+    name === 'info' ? info.write(message)
+        : error.write(message);
 }
 
 process.on('beforeExit', () => {
