@@ -8,4 +8,6 @@ logger.warn('new warning warnw')
 
 logger.error('new warning err')
 
+logger.info('the script is stop running!');
+
 fileSync.start(logger);
