@@ -2,8 +2,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 async function copyFile(sourcePath, targetPath, logger) {
-    const data = await fs.readFile(sourcePath);
-    await fs.writeFile(targetPath, data);
+    await fs.copyFile(sourcePath, targetPath);
     logger.info(`Скопійовано файл з ${sourcePath} до ${targetPath}`);
 
 }
