@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node ./main.js",
     "start:dev": "nodemon ./main.js",
+    "start:server": "nodemon ./server.js",
     "debug": "node --inspect-brk ./main.js"
   },
   "author": "volodymyr_dmytriienko",
