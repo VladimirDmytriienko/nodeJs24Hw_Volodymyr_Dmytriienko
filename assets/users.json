@@ -1,0 +1,27 @@
+[
+  {
+    "userId": 0,
+    "username": "Serena Williams",
+    "email": "serenawilliams2@server.com"
+  },
+  {
+    "userId": 1,
+    "username": "Cristiano Ronaldo",
+    "email": "cristiano.72@server.com"
+  },
+  {
+    "userId": 2,
+    "username": "LeBron James",
+    "email": "kingjames2@server.com"
+  },
+  {
+    "userId": 3,
+    "username": "John Smith",
+    "email": "johnsmith3sdcs@gmail.com"
+  },
+  {
+    "userId": 4,
+    "username": "Jordan",
+    "email": "Jordansmith3sdcs@gmail.com"
+  }
+]
