@@ -2,7 +2,16 @@ const yup = require('yup');
 const router = require('express').Router()
 const fs = require('fs');
 
-let usersData
+const knexLib = require('knex');
+
+const knexConfig = require('../knexfile');
+const knex = knexLib(knexConfig);
+
+async function getAllUsers() {
+    const data = await knex.select().from('users')
+    console.log(data);
+    return  data 
+}
 
 const validateUserId = (userId) => {
     if (!Number.isInteger(userId) || userId < 0) {
@@ -10,71 +19,60 @@ const validateUserId = (userId) => {
     }
 }
 
-fs.readFile('./assets/users.json', 'utf-8', (err, content) => {
-    if (err) throw err;
-    usersData = JSON.parse(content);
-});
-
-function saveUsersData() {
-    const data = JSON.stringify(usersData, null, 2);
-    try {
-        fs.writeFileSync('./assets/users.json', data, 'utf-8');
-        console.log('Users data has been saved.');
-    } catch (err) {
-        console.error('Error writing to users.json:', err);
-    }
-}
-
-router.post('/', async (req, resp) => {
+const userValidation = async (req, res, next) => {
     const schema = yup.object({
         username: yup.string().required(),
         email: yup.string().email().required(),
     });
     try {
-        const data = await schema.validate(req.body)
-        usersData.push({ 'userId': usersData.length, ...req.body })
-        resp.send(200, 'successfully added')
+        await schema.validate(req.body);
+        next()
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+router.post('/', userValidation, async (req, resp) => {
+    try {
+        const user = { ...req.body }
+        const result = await knex('users').insert(user)
+        const id = result[0]; 
+        const savedUser = { id: id, ...user }; 
+        resp
+            .status(200)
+            .send(savedUser)
     } catch (err) {
         resp.send(400, err.message)
         return
     }
-
 })
 
-router.get('/', (req, resp) => {
-    const jsonData = usersData
+router.get('/', async (req, resp) => {
+    const users = await getAllUsers()
     resp
         .status(200)
-        .send(jsonData)
+        .send(users)
 })
 
-router.get('/:userid', (req, resp) => {
-    const userId = +req.params.userid;
-
+router.get('/:userid', async (req, resp) => {
+    const id = +req.params.userid;
     try {
-        validateUserId(userId)
-        const user = usersData.find(user => user.userId === userId);
-        user ? resp.status(200).send(user) : resp.status(404).send('User not found')
- 
+        validateUserId(id)
+        const userDB = await knex.select().from('users').where({ id }).first();
+        userDB ? resp.status(200).send(userDB) : resp.status(404).send('User not found');
     } catch (err) {
         resp.send(400, err.message)
         return
     }
-
+    
 })
 
-router.delete('/:userid', (req, resp) => {
-    const userId = +req.params.userid
-    
+router.delete('/:userid', async (req, resp) => {
+    const id = +req.params.userid
     try {
-        validateUserId(userId);
-        const index = usersData.findIndex(user => user.userId === userId)
-        if (index !== -1) {
-            usersData.splice(index, 1)
-            resp.status(204).send('User deleted')
-        } else {
-            resp.status(404).send('User not found')
-        }
+        validateUserId(id)
+        const deletedCount = await knex('users').where({ id }).del()
+        deletedCount ? resp.status(204).send('User deleted') : resp.status(404).send('User not found') 
     } catch (err) {
         resp.send(400, err.message)
         return
@@ -83,5 +81,4 @@ router.delete('/:userid', (req, resp) => {
 
 module.exports = {
     router,
-    saveUsersData
 }

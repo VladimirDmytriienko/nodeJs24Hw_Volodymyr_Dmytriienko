@@ -2,12 +2,9 @@ const fs = require('fs');
 const express = require('express')
 const morgan = require('morgan')
 
-const { router: usersRouter,
-    saveUsersData
-} = require('./routes/users'); 
+const { router: usersRouter} = require('./routes/users'); 
 
 const srv = express()
-
 
 const jsonBodyParser = express.json()
 
@@ -20,7 +17,6 @@ srv.use(morgan(':method :url :status '))
 srv.use('/users', usersRouter)
 
 process.on('SIGINT', () => {
-    saveUsersData();
     process.exit();
 });
 
